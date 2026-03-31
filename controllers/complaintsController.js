@@ -11,11 +11,8 @@ import {
 
 export async function submitComplaint(req, res) {
   try {
-    const { description, ward_no, coords, issue_type } = req.body;
+    const { prob_description, ward, location_coords, issue_type } = req.body;
     const citizenId = req.user.id;
-
-    const [lat, lng] = coords.split(',').map(parseFloat);
-    const locationCoords = { lat, lng };
 
     const imageUrl = await uploadImageToSupabase(
       req.file.buffer,
@@ -26,9 +23,9 @@ export async function submitComplaint(req, res) {
     const complaint = await createComplaint(
       citizenId,
       imageUrl,
-      description,
-      ward_no,
-      locationCoords,  
+      prob_description,
+      ward,
+      location_coords,  
       issue_type
     );
 
@@ -93,7 +90,7 @@ export async function resolveComplaintHandler(req, res) {
   try {
     const { id } = req.params;
     const { resolve_description } = req.body;
-
+    
     const resolveImageUrl = await uploadImageToSupabase(
       req.file.buffer,
       req.file.mimetype,

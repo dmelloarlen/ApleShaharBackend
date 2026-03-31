@@ -45,7 +45,7 @@ async function getComplaintById(complaintId) {
   const { data, error } = await supabaseAdmin
     .from('complaints')
     .select('*')
-    .eq('complaint_id', complaintId)
+    .eq('id', complaintId)
     .single();
 
   if (error) throw error;
@@ -56,7 +56,7 @@ async function updateComplaintStatus(complaintId, status, estimatedTime) {
   const { data, error } = await supabaseAdmin
     .from('complaints')
     .update({ status, estimated_time: estimatedTime })
-    .eq('complaint_id', complaintId)
+    .eq('id', complaintId)
     .select()
     .single();
 
@@ -64,7 +64,7 @@ async function updateComplaintStatus(complaintId, status, estimatedTime) {
   return data;
 }
 
-async function resolveComplaint(complaintId, resolveDescription, resolveImageUrl) {
+async function  resolveComplaint(complaintId, resolveDescription, resolveImageUrl) {
   const { data, error } = await supabaseAdmin
     .from('complaints')
     .update({
@@ -73,7 +73,7 @@ async function resolveComplaint(complaintId, resolveDescription, resolveImageUrl
       resolve_image: resolveImageUrl,
       resolved_at: new Date().toISOString()
     })
-    .eq('complaint_id', complaintId)
+    .eq('id', complaintId)
     .select()
     .single();
 
