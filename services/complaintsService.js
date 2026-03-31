@@ -7,7 +7,7 @@ async function createComplaint(citizenId, imageUrl, description, wardNo, coords,
       citizen_id: citizenId,
       image_link: imageUrl,
       prob_description: description,
-      ward: wardNo,
+      ward: parseInt(wardNo),
       location_coords: coords,
       issue_type: issueType, 
       status: 'pending'
