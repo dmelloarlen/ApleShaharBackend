@@ -14,6 +14,9 @@ export async function submitComplaint(req, res) {
     const { description, ward_no, coords, issue_type } = req.body;
     const citizenId = req.user.id;
 
+    const [lat, lng] = coords.split(',').map(parseFloat);
+    const locationCoords = { lat, lng };
+
     const imageUrl = await uploadImageToSupabase(
       req.file.buffer,
       req.file.mimetype,
@@ -25,7 +28,7 @@ export async function submitComplaint(req, res) {
       imageUrl,
       description,
       ward_no,
-      coords,
+      locationCoords,  
       issue_type
     );
 
