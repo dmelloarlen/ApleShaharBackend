@@ -9,7 +9,8 @@ import {
   getComplaintByIdHandler,
   getWardComplaintsHandler,
   updateStatusHandler,
-  resolveComplaintHandler
+  resolveComplaintHandler,
+  citizenSatisfactionHandler
 } from '../controllers/complaintsController.js';
 
 const router = express.Router();
@@ -31,5 +32,8 @@ router.post('/', protect, authorize('citizen'), upload.single('image'), submitCo
 // Patch — authority only
 router.patch('/:id/status', protect, authorize('authority'), updateStatusHandler);
 router.patch('/:id/resolve', protect, authorize('authority'), upload.single('image'), resolveComplaintHandler);
+
+// Patch — citizen only
+router.patch('/:id/satisfaction', protect, authorize('citizen'), citizenSatisfactionHandler);
 
 export default router;

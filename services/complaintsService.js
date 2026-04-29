@@ -64,7 +64,7 @@ async function updateComplaintStatus(complaintId, status, estimatedTime) {
   return data;
 }
 
-async function  resolveComplaint(complaintId, resolveDescription, resolveImageUrl) {
+async function resolveComplaint(complaintId, resolveDescription, resolveImageUrl) {
   const { data, error } = await supabaseAdmin
     .from('complaints')
     .update({
@@ -80,6 +80,25 @@ async function  resolveComplaint(complaintId, resolveDescription, resolveImageUr
   if (error) throw error;
   return data;
 }
+
+/**
+ * Called by the citizen after reviewing the authority's resolution.
+ * satisfied=true  → status becomes 'closed' (permanently locked)
+ * satisfied=false → status becomes 'pending' (complaint re-initiated)
+ */
+async function citizenSatisfaction(complaintId, satisfied) {
+  const newStatus = satisfied ? 'closed' : 'pending';
+  const { data, error } = await supabaseAdmin
+    .from('complaints')
+    .update({ status: newStatus })
+    .eq('id', complaintId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
 
 async function getAllComplaints(wardFilter) {
   let query = supabaseAdmin
@@ -103,5 +122,6 @@ export {
   getComplaintById,
   updateComplaintStatus,
   resolveComplaint,
+  citizenSatisfaction,
   getAllComplaints
 };
