@@ -6,6 +6,7 @@ import {
   getComplaintById,
   updateComplaintStatus,
   resolveComplaint,
+  citizenSatisfaction,
   getAllComplaints
 } from '../services/complaintsService.js';
 
@@ -90,14 +91,38 @@ export async function resolveComplaintHandler(req, res) {
   try {
     const { id } = req.params;
     const { resolve_description } = req.body;
-    
-    const resolveImageUrl = await uploadImageToSupabase(
-      req.file.buffer,
-      req.file.mimetype,
-      'resolved'
-    );
+
+    let resolveImageUrl = null;
+    if (req.file) {
+      resolveImageUrl = await uploadImageToSupabase(
+        req.file.buffer,
+        req.file.mimetype,
+        'resolved'
+      );
+    }
 
     const complaint = await resolveComplaint(id, resolve_description, resolveImageUrl);
+    res.json({ success: true, complaint });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+}
+
+/**
+ * PATCH /api/complaints/:id/satisfaction
+ * Citizen only — confirms or rejects the authority's resolution.
+ * Body: { satisfied: boolean }
+ */
+export async function citizenSatisfactionHandler(req, res) {
+  try {
+    const { id } = req.params;
+    const { satisfied } = req.body;
+
+    if (typeof satisfied !== 'boolean') {
+      return res.status(400).json({ success: false, error: '"satisfied" must be a boolean.' });
+    }
+
+    const complaint = await citizenSatisfaction(id, satisfied);
     res.json({ success: true, complaint });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });

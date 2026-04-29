@@ -5,18 +5,39 @@ import dotenv from "dotenv"
 import testRoutes from "./routes/testRoutes.js"
 import authRoutes from "./routes/authRoutes.js"
 import complaintsRoutes from './routes/complaintsRoutes.js';
+import facilityRoutes from './routes/facilityRoutes.js';
 
 dotenv.config()
 
 const app = express()
 
-app.use(cors())
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS: origin ${origin} not allowed`));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
+app.options('*', cors());
 app.use(express.json())
 
 // Routes
 app.use("/api/test", testRoutes)
 app.use("/api/auth", authRoutes)
 app.use('/api/complaints', complaintsRoutes);
+app.use('/api/facility', facilityRoutes);
 
 const PORT = process.env.PORT || 5000
 
